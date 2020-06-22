@@ -2,7 +2,7 @@
     <div>
         <div>
             <b-navbar toggleable="lg" type="dark" variant="info">
-                <b-navbar-brand href="#">Интерфейс</b-navbar-brand>
+                <b-navbar-brand href="#">Interface</b-navbar-brand>
 
                 <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
@@ -28,14 +28,15 @@
             </b-navbar>
         </div>
         <b-nav tabs>
-            <b-nav-item :active="inputsEnable"  @click="ShowInputs">Ввод параметров</b-nav-item>
-            <b-nav-item :active="!inputsEnable" @click="ShowGraphs">Графики</b-nav-item>
+            <b-nav-item :active="inputsEnable"  @click="ShowInputs">Parameter Entry</b-nav-item>
+            <b-nav-item :active="!inputsEnable" @click="ShowGraphs">Graphs</b-nav-item>
         </b-nav>
         <div v-if="inputsEnable">
-            <WriteParams></WriteParams>
+            <WriteParams @calc="calcGood"></WriteParams>
         </div>
          <div v-if="!inputsEnable">
-            <Charts></Charts>
+            <!-- <Charts></Charts> -->
+            <component :is="componentsChart" v-if="componentsChart"/>
         </div>
     </div>
 </template>
@@ -44,14 +45,31 @@ export default {
     components: {
         WriteParams: () => import('./WriteParams.vue'),
         Charts: () => import('./Charts.vue'),
+        RandomForest: () => import('./ForestChart.vue'),
     },
     data(){
         
         return{
             inputsEnable: true,
+            componentsChart: null,
         }
     },
     methods:{
+        calcGood(algos){
+            // console.log("Algoritm", algos);
+            if(algos == "Random Forest"){
+                this.componentsChart = () => import('./ForestChart.vue');
+            }else if(algos == "Hist"){                
+                this.componentsChart = () => import('./Hist.vue');
+            }else if(algos == "Umap"){                
+                this.componentsChart = () => import('./Umap.vue');
+            }else if(algos == "CNN"){                
+                this.componentsChart = () => import('./CNN.vue');
+            }else{
+                this.componentsChart = () => import('./Charts.vue');
+            }
+            this.inputsEnable = !this.inputsEnable;
+        },
         ShowInputs(){
             this.inputsEnable = !this.inputsEnable;
         },

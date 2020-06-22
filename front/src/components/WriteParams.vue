@@ -1,25 +1,67 @@
 <template>
     <b-container fluid>
         <b-row>
-            <b-col cols="4" offset="4">
+            <b-col cols="8" offset="2">
               <!-- да простит меня бох за бр -->
                 <br>
                 <div style='border: 1px solid #ccc;padding-top: 50px;padding-bottom: 50px;'>
                     <b-form @submit="onSubmit" @reset="onReset" v-if="show">
-                      <b-form-group id="input-group-1">
+                      <!-- <b-form-group id="input-group-1">
                           <b-form-checkbox-group v-model="form.checked" id="checkboxes-4">
-                          <b-form-checkbox value="me">Показатель качества</b-form-checkbox>
-                          <b-form-checkbox value="that">Тех. Параметры</b-form-checkbox>
+                            <b-form-checkbox value="me">Показатель качества</b-form-checkbox>
+                            <b-form-checkbox value="that">Тех. Параметры</b-form-checkbox>
                           </b-form-checkbox-group>
-                      </b-form-group>
-                      <b-form-group id="input-group-2" class="col-3 offset-2">
-                          <calendar 
+                      </b-form-group> -->
+                      <b-form-group id="input-group-2" class="col-3 offset-4" >
+                          <calendar
                           v-model="form.date"
                           :range="true"
                           :lang="'rus'"
                          />
                       </b-form-group>
-                      <b-form-group id="input-group-3" label="Используемый алгоритм" label-for="input-3" class="col-10 offset-1">
+                      <b-form-group id="input-group-5" label="Factory" label-for="input-5" class="mt-3 col-10 offset-1" style="border-top: 1px solid #ccc;">
+                          <b-form-select
+                          id="input-6"
+                          v-model="form.machine"
+                          :options="machine"
+                          ></b-form-select>
+                      </b-form-group>
+                      <b-form-group id="input-group-3" label="Selection of parameters" style="border-top: 1px solid #ccc;">
+                        <div v-if="params.Control.length > 0">
+                          <b-container>
+                            <b-row >
+                              <b-col cols="6">
+                                Тех. Параметры
+                              </b-col>
+                              <b-col cols="6">
+                                Level of quality
+                              </b-col>
+                            </b-row>
+                            <b-row >
+                              <b-col cols="4" offset="1">
+                                  <b-form-checkbox-group v-model="form.params.Control" id="checkboxes-4" style="border: 1px solid #ccc;height:200px;word-break: break-all; overflow-y: scroll; overflow-x: hidden;text-align: left;">
+                                    <b-form-checkbox v-for="(value, key) in params.Control" :key="key" :value="value.id">{{value.name}}</b-form-checkbox>
+                                  </b-form-checkbox-group>
+                                  <div class="mt-3">
+                                    <b-button variant="primary" @click="addAll('Control')">Add all</b-button>
+                                    <b-button variant="danger ml-5" @click="empty('Control')">delete everything</b-button>
+                                  </div>
+
+                              </b-col>
+                              <b-col cols="4" offset="2" >
+                                  <b-form-checkbox-group v-model="form.params.Quality" id="checkboxes-4" style="border: 1px solid #ccc;height:200px;word-break: break-all; overflow-y: scroll; overflow-x: hidden;text-align: left;">
+                                    <b-form-checkbox v-for="(value, key) in params.Quality" :key="key" :value="value.id">{{value.name}}</b-form-checkbox>
+                                  </b-form-checkbox-group>
+                                  <div class="mt-3">
+                                    <b-button variant="primary" @click="addAll('Quality')">Add all</b-button>
+                                    <b-button variant="danger ml-5" @click="empty('Quality')">delete everything</b-button>
+                                  </div>
+                              </b-col>
+                            </b-row>
+                          </b-container>
+                        </div>
+                      </b-form-group>
+                      <b-form-group id="input-group-4" label="Choose algorithm" label-for="input-3" class="mt-3 col-10 offset-1" style="border-top: 1px solid #ccc;">
                           <b-form-select
                           id="input-3"
                           v-model="form.algos"
@@ -28,8 +70,11 @@
                           ></b-form-select>
                       </b-form-group>
 
-                     
-                    <b-button type="submit" variant="primary">Submit</b-button>
+
+                    <b-button type="submit" variant="primary" v-if="!loading">Calculate</b-button>
+                    <b-button variant="primary" v-if="loading" disabled>
+                      <b-spinner small type="grow"></b-spinner>Calculation...
+                    </b-button>
                     <!-- <b-button type="reset" variant="danger">Reset</b-button> -->
                     </b-form>
                     <!-- <b-card class="mt-3" header="Form Data Result">
@@ -47,41 +92,113 @@
 <script>
   import axios from 'axios';
   import calendar from 'vue-datepicker-ui'
-  export default {  
+  export default {
     components: {
       calendar,
     },
     data() {
       return {
+        loading: false,
         form: {
           date:  [
-            new Date(),
-            new Date()
+            new Date(2015,5,16),
+            new Date(2015,5,17)
           ],
-          Param1: '',
-          Param2: '',
-          algos: 'Linear Reg',
-          checked: []
+          algos: 'Umap',
+          params: {
+            Control:[],
+            Quality: []
+          },
+          machine: [],
         },
-        algos: ['Linear Reg', 'BANANA'],
+        params: {
+          Control:[],
+          Quality: []
+        },
+        algos: ['Umap', 'CNN', 'Random Forest', 'Hist'],
+        machine: [],
         show: true
       }
     },
     created: function(){
       this.getParams();
+      this.getMachine();
     },
     methods: {
+      empty(type){
+        var app = this;
+          app.form.params[type] = [];
+          app.form.machine = []
+      },
+      addAll(type){
+        var app = this;
+          app.params[type].forEach(param => {
+            app.form.params[type].push(param.id);
+          })
+          this.$nextTick(() => {
+            this.show = true
+          })
+      },
       onSubmit(evt) {
         evt.preventDefault()
-        alert(JSON.stringify(this.form))
-      },
-      getParams(){
-        axios.get("http://127.0.0.1:8000/api/parameter/")
+        // eslint-disable-next-line
+        this.loading = true;
+        var app = this;
+        axios.post(`http://${window.location.hostname}:8383/api/calc/calc/`,this.form)
         .then(resp=>{
-          console.log(resp);
+          // eslint-disable-next-line
+          this.$store.dispatch('SAVE_TODO', resp.data);
+          this.$emit('calc', app.form.algos);
+          app.loading = false;
         })
         .catch(error=>{
+          // eslint-disable-next-line
+          alert("С данными параметрами расчет не возможен")
+          // eslint-disable-next-line
           console.warn(error);
+          app.loading = false;
+        })
+        // eslint-disable-next-line
+        // console.log(JSON.stringify(this.form))
+      },
+      getParams(){
+        var app = this;
+        axios.get(`http://${window.location.hostname}:8383/api/parameter/`)
+        .then(resp=>{
+          app.fillParams(resp['data']);
+        })
+        .catch(error=>{
+          // eslint-disable-next-line
+          console.warn(error);
+        })
+      },
+      getMachine(){
+        var app = this;
+        axios.get(`http://${window.location.hostname}:8383/api/machine/`)
+        .then(resp=>{
+          app.fillMachine(resp['data']);
+        })
+        .catch(error=>{
+          // eslint-disable-next-line
+          console.warn(error);
+        })
+      },
+      fillParams(sources){
+        var app = this;
+        sources.forEach(element => {
+          app.params[element.position].push(element);
+        })
+        this.$nextTick(() => {
+          this.show = true
+        })
+      },
+      fillMachine(sources){
+        var app = this;
+        sources.forEach(element => {
+          app.machine.push({text:element.name, value:element.id});
+        })
+        this.$nextTick(() => {
+          this.show = true
         })
       },
       onReset(evt) {
@@ -90,7 +207,7 @@
         this.form.Param1 = ''
         this.form.Param2 = ''
         this.form.Param3 = null
-        this.form.checked = []
+        // this.form.checked = []
         // Trick to reset/clear native browser form validation state
         this.show = false
         this.$nextTick(() => {

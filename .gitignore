@@ -1,0 +1,6 @@
+back/db.3sqlite3
+back/*.sqlite3
+back/dataanalysis/__pycache__
+__pycache__/*
+env/*
+back/dataanalysis/migrations/__pycache__/*

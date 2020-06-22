@@ -19,15 +19,14 @@
                           :lang="'rus'"
                          />
                       </b-form-group>
-                      <b-form-group id="input-group-5" label="Завод" label-for="input-5" class="mt-3 col-10 offset-1" style="border-top: 1px solid #ccc;">
+                      <b-form-group id="input-group-5" label="Factory" label-for="input-5" class="mt-3 col-10 offset-1" style="border-top: 1px solid #ccc;">
                           <b-form-select
                           id="input-6"
                           v-model="form.machine"
                           :options="machine"
-                          required
                           ></b-form-select>
                       </b-form-group>
-                      <b-form-group id="input-group-3" label="Выбор параметров" style="border-top: 1px solid #ccc;">
+                      <b-form-group id="input-group-3" label="Selection of parameters" style="border-top: 1px solid #ccc;">
                         <div v-if="params.Control.length > 0">
                           <b-container>
                             <b-row >
@@ -35,7 +34,7 @@
                                 Тех. Параметры
                               </b-col>
                               <b-col cols="6">
-                                Показатель качества
+                                Level of quality
                               </b-col>
                             </b-row>
                             <b-row >
@@ -44,8 +43,8 @@
                                     <b-form-checkbox v-for="(value, key) in params.Control" :key="key" :value="value.id">{{value.name}}</b-form-checkbox>
                                   </b-form-checkbox-group>
                                   <div class="mt-3">
-                                    <b-button variant="primary" @click="addAll('Control')">Добавить все</b-button>
-                                    <b-button variant="danger ml-5" @click="empty('Control')">Удалить все</b-button>
+                                    <b-button variant="primary" @click="addAll('Control')">Add all</b-button>
+                                    <b-button variant="danger ml-5" @click="empty('Control')">delete everything</b-button>
                                   </div>
 
                               </b-col>
@@ -54,8 +53,8 @@
                                     <b-form-checkbox v-for="(value, key) in params.Quality" :key="key" :value="value.id">{{value.name}}</b-form-checkbox>
                                   </b-form-checkbox-group>
                                   <div class="mt-3">
-                                    <b-button variant="primary" @click="addAll('Quality')">Добавить все</b-button>
-                                    <b-button variant="danger ml-5" @click="empty('Quality')">Удалить все</b-button>
+                                    <b-button variant="primary" @click="addAll('Quality')">Add all</b-button>
+                                    <b-button variant="danger ml-5" @click="empty('Quality')">delete everything</b-button>
                                   </div>
                               </b-col>
                             </b-row>
@@ -72,9 +71,9 @@
                       </b-form-group>
 
 
-                    <b-button type="submit" variant="primary" v-if="!loading">Рассчитать</b-button>
+                    <b-button type="submit" variant="primary" v-if="!loading">Calculate</b-button>
                     <b-button variant="primary" v-if="loading" disabled>
-                      <b-spinner small type="grow"></b-spinner>Идет расчет...
+                      <b-spinner small type="grow"></b-spinner>Calculation...
                     </b-button>
                     <!-- <b-button type="reset" variant="danger">Reset</b-button> -->
                     </b-form>
@@ -116,7 +115,6 @@
           Control:[],
           Quality: []
         },
-
         algos: ['Umap', 'CNN', 'Random Forest', 'Hist'],
         machine: [],
         show: true

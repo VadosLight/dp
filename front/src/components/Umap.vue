@@ -4,7 +4,7 @@
       <b-row>
         <b-col>
           <b-card-group deck>
-            <b-card border-variant="info" header="Настройка мета параметров" align="center">
+            <b-card border-variant="info" header="Setting meta parameters" align="center">
               <b-card-text>
                 <b-row>
                   <b-col cols="3">
@@ -75,9 +75,9 @@
       <b-row class="mt-5">
         <b-col cols="4">
           <b-card-group deck>
-            <b-card border-variant="info" header="Параметры" align="center">
+            <b-card border-variant="info" header="Parameters" align="center">
               <b-card-text>
-                <p>Параметры которые влияют на показатель качества:</p>
+                <p>Parameters that affect the quality score:</p>
                 <ul>
                   <li v-for="(val, key) in dataShow.top_parametr_lasso" v-bind:key="key" >{{val}}</li>
                 </ul>
@@ -128,7 +128,7 @@ export default {
       chart1: {
         series: [
           {
-            name: "Черные точки",
+            name: "Black spots",
             data: [
               [16.4, 5.4],
               [21.7, 2],
@@ -164,7 +164,7 @@ export default {
             ]
           },
           {
-            name: "Без дефектов",
+            name: "Without defects",
             data: [
               [36.4, 13.4],
               [1.7, 11],
@@ -217,7 +217,7 @@ export default {
             }
           },
           title: {
-            text: "Уменьшение размерности до 2D",
+            text: "Reduce dimension to 2D",
             align: "center"
           },
           dataLabels: {
@@ -362,7 +362,7 @@ export default {
           });
         })
         .catch(error => {
-          alert("С данными параметрами расчет не возможен");
+          alert("With these parameters, calculation is not possible.");
           // eslint-disable-next-line
           console.warn(error);
           app.loading = false;

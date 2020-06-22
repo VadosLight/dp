@@ -2,7 +2,7 @@
   <b-container class="mt-5">
     <b-row>
       <b-card-group deck class="mt-5" cols=4>                        
-        <b-card border-variant="info" header="Информация" align="center">
+        <b-card border-variant="info" header="Information" align="center">
           <b-card-text>
             <p>
                 ROC/AUC: {{parseFloat(roc_auc).toFixed(2)}}                                             
@@ -16,13 +16,13 @@
         </b-card>        
       </b-card-group>
       <b-col cols="8">
-        <h2>Графический результат</h2>
-        <!-- <apexchart
+        <h2>Graphic result</h2>
+        <apexchart
           v-if="!loading"
           type="line"
           :options="chart1.chartOptions"
           :series="chart1.series"
-        /> -->
+        />
         <apexchart type=line  :options="chart2.chartOptions" :series="chart2.series" />
       </b-col>
     </b-row>
@@ -38,10 +38,10 @@ export default {
     apexchart: VueApexCharts
   },
   created() {
-    let txt =
-      '{"cnn":{"false_positive_rate":[0.0,0.1694915254237288,1.0],"true_postitve_rate":[0.0,0.7410714285714286,1.0],"roc_auc":0.7857899515738499,"errors":[83,150,735,29]}}';
-
-    this.dataShow = JSON.parse(txt);
+    // let txt =
+    //   '{"cnn":{"false_positive_rate":[0.0,0.1694915254237288,1.0],"true_postitve_rate":[0.0,0.7410714285714286,1.0],"roc_auc":0.7857899515738499,"errors":[83,150,735,29]}}';
+    // this.dataShow = JSON.parse(txt);
+    this.dataShow = this.$store.getters.DATASHOW;
     this.render();
   },
   data() {
@@ -59,15 +59,14 @@ export default {
       chart1: {
         series: [
           {
-            name: "Предсказание нейройнной сети",
+            name: "Neural Network Prediction",
             data: []
           },
           {
-            name: "Истинна",
+            name: "True",
             data: []
           }
         ],
-
         chartOptions: {
             chart: {
               height: 350,
@@ -83,7 +82,7 @@ export default {
               curve: 'straight'
             },
             title: {
-              text: 'Product Trends by Month',
+              text: 'The ratio of experimental data to predicted',
               align: 'left'
             },
             grid: {
@@ -93,16 +92,22 @@ export default {
               },
             },
             yaxis:{
-              min: -1,
-              max: 2
+              min: 0,
+              max: 1,
+              title: {
+                  text: "Class",                            
+              },
             },
             xaxis: {
               //categories: [],
               type: 'datetime',
-              tickAmount: 6,
+              title: {
+                  text: "Time",                            
+              },
+              tickAmount: 10,
               labels: {
                 show: true,
-                rotate: -90,
+                rotate: -45,
                 format: 'HH:mm',
                 datetimeFormatter: {
                     year: 'yyyy',
@@ -214,14 +219,13 @@ export default {
         .then(resp => {
           this.$store.dispatch("SAVE_TODO", resp.data);
           this.$emit("calc", "Umap");
-
           this.$nextTick(() => {
             this.render();
             app.loading = false;
           });
         })
         .catch(error => {
-          alert("С данными параметрами расчет не возможен");
+          alert("With these parameters, calculation is not possible.");
           // eslint-disable-next-line
           console.warn(error);
           app.loading = false;
@@ -234,27 +238,23 @@ export default {
       if (this.dataShow != null) {
         this.chart1.series[0].data = [];
         this.chart1.series[1].data = [];
-
         // this.chart2.series[0].data = [];
-
         var app = this;
         // eslint-disable-next-line
         var black = [];
         // eslint-disable-next-line
         var category = [];
-        // Object.values(this.dataShow.cnn.x).map(function(value,key) {
-        //   // eslint-disable-next-line
-        //   black.push({y:app.dataShow.cnn.y_orig[key], x: new Date(value).getTime()});
-        // });
-        // this.chart1.series[1].data = black;
-        // this.$set(this.chart1.series[1], "data", black);
-
-        // Object.values(this.dataShow.cnn.x).map(function(value, key) {
-        //   // eslint-disable-next-line
-        //   app.chart1.series[0].data.push({y:app.dataShow.cnn.y_pred[key], x:value});
-        // });
+        Object.values(this.dataShow.cnn.date).map(function(value,key) {
+          // eslint-disable-next-line
+          black.push({y:app.dataShow.cnn.y_orig[key], x: new Date(app.dataShow.cnn.date[key]).getTime()});
+        });
+        this.chart1.series[1].data = black;
+        this.$set(this.chart1.series[1], "data", black);
+        Object.values(this.dataShow.cnn.date).map(function(value, key) {
+          // eslint-disable-next-line
+          app.chart1.series[0].data.push({y:app.dataShow.cnn.y_pred[key], x:value});
+        });
         this.roc_auc = this.dataShow.cnn.roc_auc;
-
         this.TP = this.dataShow.cnn.errors[0];
         this.FP = this.dataShow.cnn.errors[1];
         this.TN = this.dataShow.cnn.errors[2];
@@ -263,7 +263,6 @@ export default {
             // eslint-disable-next-line  
             app.chart2.series[0].data.push({x:value, y:app.dataShow.cnn.true_postitve_rate[key]})
         });
-
         // this.$set(this.chart1.chartOptions.xaxis, "categories", category);
       }
       this.$nextTick();

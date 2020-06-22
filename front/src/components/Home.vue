@@ -2,7 +2,7 @@
     <div>
         <div>
             <b-navbar toggleable="lg" type="dark" variant="info">
-                <b-navbar-brand href="#">Интерфейс</b-navbar-brand>
+                <b-navbar-brand href="#">Interface</b-navbar-brand>
 
                 <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
@@ -28,8 +28,8 @@
             </b-navbar>
         </div>
         <b-nav tabs>
-            <b-nav-item :active="inputsEnable"  @click="ShowInputs">Ввод параметров</b-nav-item>
-            <b-nav-item :active="!inputsEnable" @click="ShowGraphs">Графики</b-nav-item>
+            <b-nav-item :active="inputsEnable"  @click="ShowInputs">Parameter Entry</b-nav-item>
+            <b-nav-item :active="!inputsEnable" @click="ShowGraphs">Graphs</b-nav-item>
         </b-nav>
         <div v-if="inputsEnable">
             <WriteParams @calc="calcGood"></WriteParams>

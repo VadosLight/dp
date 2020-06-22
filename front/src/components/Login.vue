@@ -3,7 +3,7 @@
     <form class="vue-form" @submit.prevent="submit">
 
     <div class="error-message">
-      <p v-show="!email.valid">Пожалуста введите корректный Email.</p>
+      <p v-show="!email.valid">Please enter a valid Email.</p>
     </div>
 
     <fieldset>
@@ -61,7 +61,7 @@ export default {
         })
         .catch(error=>{
           // eslint-disable-next-line
-          alert("Неверный логин или пароль")
+          alert("wrong login or password")
           // eslint-disable-next-line
           console.warn(error);
         })

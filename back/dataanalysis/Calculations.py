@@ -22,14 +22,14 @@ class Calculations:
 
     def __init__(self):
         pass
-
+    
     def perf_measure(y_actual, y_hat):
         TP = 0
         FP = 0
         TN = 0
         FN = 0
 
-        for i in range(len(y_hat)):
+        for i in range(len(y_hat)): 
             if y_actual[i]==y_hat[i]==1:
                 TP += 1
             if y_hat[i]==1 and y_actual[i]!=y_hat[i]:
@@ -57,9 +57,9 @@ class Calculations:
         print(params)
         print(float(params.get("treshold", 0)))
         # params = json.loads(params)
-        nRowsRead = 1000
-        df1 = pd.read_csv('Control.csv', delimiter=',', nrows=nRowsRead)
-        df2 = pd.read_csv('Quality.csv', delimiter='\t', nrows=nRowsRead)
+        nRowsRead = 1000 
+        df1 = pd.read_csv(r"C:\Users\it-va\Documents\GitHub\dp\back\dataanalysis\Control.csv", delimiter=',', nrows=nRowsRead)
+        df2 = pd.read_csv(r"C:\Users\it-va\Documents\GitHub\dp\back\dataanalysis\Quality.csv", delimiter='\t', nrows=nRowsRead)
         df1.dataframeName = 'Control.csv'
         df2.dataframeName = 'Quality.csv'
         df1.drop([col for col in df1.columns if col.startswith('Wickler')],
@@ -127,12 +127,12 @@ class Calculations:
                 'black':{
                     'x': ret[ret['color']=='black']['x'],
                     'y': ret[ret['color']=='black']['y'],
-                },
+                }, 
                 'red':{
                     'x': ret[ret['color']=='red']['x'],
                     'y': ret[ret['color']=='red']['y'],
                 }
-            },
+            },            
         }
         # returns['params'] = {}
 
@@ -162,15 +162,15 @@ class Calculations:
         # returns['lasso_umap']['red']['x'] = ret[ret['color']=='red']['x']
         # returns['lasso_umap']['red']['y'] = ret[ret['color']=='red']['y']
 
-
+        
         return returns
 
     def CalcCNN(params):
         print(params)
-        nRowsRead = 1000
-        df1 = pd.read_csv('Control.csv', delimiter=',', nrows=nRowsRead)
-        df2 = pd.read_csv('Quality.csv', delimiter='\t', nrows=nRowsRead)
-        df1.dataframeName = 'Control.csv'
+        nRowsRead = 1000 
+        df1 = pd.read_csv(r"C:\Users\it-va\Documents\GitHub\dp\back\dataanalysis\Control.csv", delimiter=',', nrows=nRowsRead)
+        df2 = pd.read_csv(r"C:\Users\it-va\Documents\GitHub\dp\back\dataanalysis\Quality.csv", delimiter='\t', nrows=nRowsRead)
+        df1.dataframeName = 'Control.csv' 
         df2.dataframeName = 'Quality.csv'
         df_control = df1
         df_quality = df2
@@ -197,24 +197,27 @@ class Calculations:
         yhat_02 = Cnn_Model.predict(X)
         # yhat_02 = model.predict(X)
         predicts02 = yhat_02[:,0]
-        predicts02 = predicts02 > 0.99
+        predicts02 = predicts02 > 0.5
         predicts02 = predicts02.astype(int)
-        y = y.astype(int)
+        y = y.astype(int)   
         print(y, predicts02)
         fpr, tpr, threshold = roc_curve(predicts02, y)
         roc_auc = auc(fpr, tpr)
-
+        
         returns = {
-            'cnn': {
+            'cnn': { 
                 "false_positive_rate":fpr.tolist(),
                 "true_postitve_rate":tpr.tolist(),
                 "roc_auc":roc_auc.tolist(),
-                "errors": Calculations.perf_measure(predicts02, y)
-            },
+                "errors": Calculations.perf_measure(predicts02, y),
+                "y_pred": predicts02,
+                "y_orig": y,
+                "date": X_df_scaller.index.values
+            },            
         }
         return returns
 
-
+    
 
     def Hist(self, params):
 
@@ -268,9 +271,9 @@ class Calculations:
         #Сделал так потому что некогда разбираться как работают джанговские модели
         conn = sqlite3.connect('db.sqlite3')
         query = "SELECT * FROM dataanalysis_measurements where parameter_id=%s or parameter_id =%s"%(params['Control'][0], params['Quality'][0])
-
+        
         df = pd.read_sql_query(query,conn)
-
+        
         date_X = df[df['parameter_id'] == params['Control'][0]]['date']
         date_Y = df[df['parameter_id'] == params['Quality'][0]]['date']
 
@@ -283,7 +286,7 @@ class Calculations:
 
         X_train = X[:1000].values.reshape(-1,1)
         X_test = X[-1000:].values.reshape(-1,1)
-
+        
         y_train = y[:1000].values.reshape(-1,1)
         y_test = y[-1000:].values.reshape(-1,1)
 
@@ -296,7 +299,7 @@ class Calculations:
         mse =  mean_squared_error(y_test, y_pred)
         print('Coefficients: \n', regr.coef_)
         print("Mean squared error: %.2f" % mean_squared_error(y_test, y_pred))
-
+        
         print('Variance score: %.2f' % r2_score(y_test, y_pred))
 
         fpr, tpr, thresholds = roc_curve(y_test, y_pred, pos_label=2)

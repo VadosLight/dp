@@ -61,7 +61,7 @@
                           </b-container>
                         </div>
                       </b-form-group>
-                      <b-form-group id="input-group-4" label="Используемый алгоритм" label-for="input-3" class="mt-3 col-10 offset-1" style="border-top: 1px solid #ccc;">
+                      <b-form-group id="input-group-4" label="Choose algorithm" label-for="input-3" class="mt-3 col-10 offset-1" style="border-top: 1px solid #ccc;">
                           <b-form-select
                           id="input-3"
                           v-model="form.algos"

@@ -7,10 +7,10 @@
                         <b-card border-variant="info" header="Параметры" align="center">
                             <b-card-text>
                                 <p>
-                                   Технические Параметр: ExtB_Ist_Massedruck                                  
+                                   Technical Parameter: ExtB_Ist_Massedruck                                  
                                 </p>
                                 <p>
-                                    Показатель качества: Stippe_-3000                                 
+                                    Level of quality: Stippe_-3000                                 
                                 </p>
 
                             </b-card-text>
@@ -20,16 +20,16 @@
                         <b-card border-variant="info" header="Информация" align="center">
                             <b-card-text>
                                 <p>
-                                    Коеф. Лин.Рег.: {{parseFloat(coefc).toFixed(2)}}                                    
+                                    Odds. Lin.Reg.: {{parseFloat(coefc).toFixed(2)}}                                    
                                 </p>
                                 <p>
-                                    Среднеквадратическая ошибка: {{parseFloat(mean_squared_error).toFixed(2)}}                                    
+                                    Standard error: {{parseFloat(mean_squared_error).toFixed(2)}}                                    
                                 </p>
                                 <p>
                                     ROC/AUC: {{parseFloat(roc_auc).toFixed(2)}}                                    
                                 </p>
                                 <p>
-                                    Дисперсия: {{parseFloat(variance_score).toFixed(2)}}                                    
+                                    Dispersion: {{parseFloat(variance_score).toFixed(2)}}                                    
                                 </p>
 
                             </b-card-text>
@@ -38,7 +38,7 @@
                     </b-card-group>
                 </b-col>
                 <b-col cols="8">
-                    <h2>Графический результат</h2>
+                    <h2>Graphic result</h2>
                     <apexchart type=line :options="chart1.chartOptions" :series="chart1.series" />
                 </b-col>
                 
